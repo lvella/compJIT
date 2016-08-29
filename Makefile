@@ -3,8 +3,8 @@ CXX := clang++
 CF90 := gfortran
 
 # Files to compile
-CPPFILE := programaTeste.cpp
-FFILE := fort2cppsub.f90
+CPPFILE := executaInput.cpp
+FFILE := intermed.f90
 MFILE := fmain.f90
 
 # Exec

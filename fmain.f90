@@ -1,7 +1,7 @@
 program main
-	use fmain2cppsub
+	use intermed
 	use, intrinsic:: iso_c_binding, only: c_char, c_int, c_double
-	character (kind=c_char, len=*),parameter :: fPath='teste.cpp', fName ='teste'
+	character (kind=c_char, len=*),parameter :: fPath='fileIn2.cpp', fName ='f2'
 	integer(c_int), parameter:: gama = 6 
 	integer(c_int):: i
 	real(c_double), parameter:: a = 0.065, C = 1.168, h = 0.035, v5 = 0.0, v6 = 0.0, v7 =0.0, v8 = 0.0, v9=0.0
