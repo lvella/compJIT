@@ -31,46 +31,35 @@ static std::string gen_rand_name()
 }
 
 extern "C"{
-extern void cfunc(char *fPath, int *len, char *fName, double *numDouble, double *a, double *C, double *h, double *y, double *v5, double *v6, double *v7, double *v8, double *v9, int *gama);
+	void load_module(char* fPath, void** ctx);
+	void load_func(void** ctx, char* fName, void** func);
 }
 
-void cfunc(char *fPath, int *len, char *fName, double *numDouble, double *a, double *C, double *h, double *y, double *v5, double *v6, double *v7, double *v8, double *v9, int *gama)
+void load_module(char* fPath, void** ctx)
+{
+	std::string libname = gen_rand_name();
+
+	// Call g++ on the file...
 	{
-	static double(*f)(double a, double C, double h,  double y, double v5, double v6, double v7, double v8, double v9, int gama) = nullptr;
+		std::stringstream cmd;
+		cmd << "g++ -shared -o " << libname
+			<< " -O3 -fPIC -flto -march=native -mtune=native " << fPath;
+		int ret = system(cmd.str().c_str());
 
-        if(!f){
-		std::string path(fPath, *len);
-		std::string libname = gen_rand_name();
-
-		// Call g++ on the file...
-		{
-			std::stringstream cmd;
-			cmd << "g++ -shared -o " << libname
-				<< " -O3 -fPIC -flto -march=native -mtune=native " << path;
-			int ret = system(cmd.str().c_str());
-
-			if(ret != 0) {
-				std::cerr << "Compilation error!" << std::endl;
-				return;
-			}
-		}
-
-		// Open the just compiled file
-		void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
-
-		// Delete it, for it is no longer needed
-		unlink(libname.c_str());
-
-		f = (double (*)(double a, double C, double h, double y, double v5, double v6, double v7, double v8, double v9, int gama)) dlsym(libhandle, fName);
-		if(f) {
-			std::cout << "Function \"" << fName << "\" correctly loaded from file \"" << path << "\"." << std::endl;
-		} else {
-			std::cerr << "Error: Function \"" << fName << "\" not found in file \""
-				<< path << "\"." << std::endl;
+		if(ret != 0) {
+			std::cerr << "Compilation error!" << std::endl;
 			return;
 		}
 	}
 
-	*numDouble = f(*a,*C,*h,*y,*v5,*v6,*v7,*v8,*v9,*gama);
-	std::cout<<" Valor de y: "<< *y <<" ";
+	// Open the just compiled file
+	*ctx = dlopen(libname.c_str(), RTLD_LAZY);
+
+	// Delete it, for it is no longer needed
+	unlink(libname.c_str());
+}
+
+void load_func(void** ctx, char* fName, void** func)
+{
+	*func = dlsym(*ctx, fName);
 }
