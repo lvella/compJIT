@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <random>
+#include <cassert>
 
 #include <unistd.h>
 #include <dlfcn.h>
@@ -42,7 +43,7 @@ void load_module(char* fPath, void** ctx)
 	// Call g++ on the file...
 	{
 		std::stringstream cmd;
-		cmd << "g++ -shared -o " << libname
+		cmd << "gfortran -shared -o " << libname
 			<< " -O3 -fPIC -flto -march=native -mtune=native " << fPath;
 		int ret = system(cmd.str().c_str());
 
